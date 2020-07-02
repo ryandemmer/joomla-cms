@@ -60,6 +60,14 @@
 				// We already have the Target, so reset the selector and assign given element as target
 				options.selector = null;
 				options.target   = element;
+				
+				// remove the editor if it already exists
+				var editor = tinymce.get(element.id);
+				
+    				if (editor) {
+        				editor.remove();
+        				delete Joomla.editors.instances[element.id];
+    				}
 			}
 
 			// @TODO: the ext-buttons should be as TinyMCE plugins, not the callback hack
@@ -109,6 +117,16 @@
 		// Init in subform field
 		if(window.jQuery) {
 			jQuery(document).on('subform-row-add', function (event, row) {
+				Joomla.JoomlaTinyMCE.setupEditors(row);
+			});
+			// re-initialize the editor on completion of a subform sort
+			jQuery(document).on('subform-row-sort', function (event, row) {
+    				var name = jQuery(row).data('base-name');
+
+                        	if (!name || name !== 'editor') {
+                            		return;
+                        	}
+				
 				Joomla.JoomlaTinyMCE.setupEditors(row);
 			});
 		}
